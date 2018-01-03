@@ -23,8 +23,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set any additional class parameters as needed
-        self.learning = learning
-        self.valid_actions = [None, 'forward', 'left', 'right']
+        # self.valid_actions = [None, 'forward', 'left', 'right']
 
 
     def reset(self, destination=None, testing=False):
@@ -41,8 +40,14 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
+        self.epsilon = 0.8 * self.epsilon
+
+        if testing:
+            self.epsilon = 0
+            self.alpha = 0
 
         return None
+
 
     def build_state(self):
         """ The build_state function is called when the agent requests data from the 
@@ -58,7 +63,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
-        state = None
+        state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
 
         return state
 
@@ -71,8 +76,10 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
+        state_Q = self.Q[state]
+        key_max = max(state_Q.keys(), key=(lambda k: state_Q[k]))
 
-        maxQ = None
+        maxQ = state_Q[key_max]
 
         return maxQ 
 
@@ -86,6 +93,12 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
+        if self.learning:
+            if state not in self.Q:
+                action_Q_dict = dict()
+                for action in self.valid_actions:
+                    action_Q_dict[action] = 0.0
+                self.Q[state] = action_Q_dict
 
         return
 
@@ -105,8 +118,19 @@ class LearningAgent(Agent):
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
-
-        action = random.choice(self.valid_actions)
+        if self.learning:
+            rnd_num = random.random()
+            if rnd_num < self.epsilon:
+                action = random.choice(self.valid_actions)
+            else:
+                current_max_Q = self.get_maxQ(state)
+                available_actions = []
+                for action in self.Q[state]:
+                    if current_max_Q == self.Q[state][action]:
+                        available_actions.append(action)
+                action = random.choice(available_actions)
+        else:
+            action = random.choice(self.valid_actions)
 
         return action
 
@@ -165,6 +189,7 @@ def run():
     #   enforce_deadline - set to True to enforce a deadline metric
     env.set_primary_agent(agent)
     env.enforce_deadline = True
+    env.valid_actions = [None, 'forward', 'left', 'right'];
 
     ##############
     # Create the simulation
