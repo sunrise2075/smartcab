@@ -40,7 +40,9 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        self.epsilon = self.epsilon * 0.99
+        # 
+
+        self.epsilon = self.epsilon - 0.0004
 
         if testing:
             self.epsilon = 0
@@ -93,12 +95,12 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
-        if self.learning:
-            if state not in self.Q:
-                action_Q_dict = dict()
-                for action in self.valid_actions:
-                    action_Q_dict[action] = 0.0
-                self.Q[state] = action_Q_dict
+        if self.learning and state not in self.Q:
+
+            action_Q_dict = dict()
+            for action in self.valid_actions:
+                action_Q_dict[action] = 0.0
+            self.Q[state] = action_Q_dict
 
         return
 
@@ -184,7 +186,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.98, alpha=0.9)
+    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.9, alpha=0.3)
     
     ##############
     # Follow the driving agent
