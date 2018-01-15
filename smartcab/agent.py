@@ -18,6 +18,7 @@ class LearningAgent(Agent):
         self.Q = dict()          # Create a Q-table which will be a dictionary of tuples
         self.epsilon = epsilon   # Random exploration factor
         self.alpha = alpha       # Learning factor
+        self.trialNo = 0;        # Sequence Number for Trial
 
         ###########
         ## TO DO ##
@@ -33,20 +34,23 @@ class LearningAgent(Agent):
 
         # Select the destination as the new location to route to
         self.planner.route_to(destination)
-        
+
         ########### 
         ## TO DO ##
         ###########
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        # 
-
-        self.epsilon = self.epsilon - 0.0004
 
         if testing:
             self.epsilon = 0
             self.alpha = 0
+        else:
+            #Increment the sequence number of trial
+            self.trialNo += 1
+            step = .5 * math.pi/1000
+            self.epsilon =  self.epsilon * math.cos(step * self.trialNo)
+
 
         return None
 
@@ -65,7 +69,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
-        state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
+        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
 
         return state
 
@@ -186,7 +190,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.9, alpha=0.3)
+    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.999, alpha=0.3)
     
     ##############
     # Follow the driving agent
@@ -210,7 +214,7 @@ def run():
     # Flags:
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(tolerance=0.01, n_test=15)
+    sim.run(tolerance=0.005, n_test=15)
 
 
 if __name__ == '__main__':
