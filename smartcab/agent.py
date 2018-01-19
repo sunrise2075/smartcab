@@ -48,7 +48,7 @@ class LearningAgent(Agent):
         else:
             #Increment the sequence number of trial
             self.trialNo += 1
-            step = .5 * math.pi/1000
+            step = .5 * math.pi/5000
             self.epsilon =  self.epsilon * math.cos(step * self.trialNo)
 
 
@@ -69,7 +69,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
-        state = (waypoint, inputs['light'], inputs['left'], inputs['oncoming'])
+        state = (waypoint, inputs['light'], inputs['left'], inputs['right'], inputs['oncoming'])
 
         return state
 
@@ -82,10 +82,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
-        state_Q = self.Q[state]
-        key_max = max(state_Q.keys(), key=(lambda k: state_Q[k]))
-
-        maxQ = state_Q[key_max]
+        maxQ = max(self.Q[state].values())
 
         return maxQ 
 
@@ -190,7 +187,7 @@ def run():
     #   learning   - set to True to force the driving agent to use Q-learning
     #    * epsilon - continuous value for the exploration factor, default is 1
     #    * alpha   - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.999, alpha=0.3)
+    agent = env.create_agent(LearningAgent, learning=True, epsilon=0.999, alpha=0.6)
     
     ##############
     # Follow the driving agent
