@@ -48,7 +48,7 @@ class LearningAgent(Agent):
         else:
             #Increment the sequence number of trial
             self.trialNo += 1
-            self.epsilon =  0.999 ** self.trialNo
+            self.epsilon =  0.998 ** self.trialNo
 
 
         return None
