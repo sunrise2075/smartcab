@@ -48,8 +48,7 @@ class LearningAgent(Agent):
         else:
             #Increment the sequence number of trial
             self.trialNo += 1
-            step = .5 * math.pi/5000
-            self.epsilon =  self.epsilon * math.cos(step * self.trialNo)
+            self.epsilon =  0.999 ** self.trialNo
 
 
         return None
